@@ -15,21 +15,21 @@ const Navbar = () => {
   const [cryptoExpanded, setCryptoExpanded] = useState(true);
 
   return (
-    <div className="w-72 bg-white min-h-screen p-6 border-r shadow-sm flex flex-col">
+    <div className="w-72 bg-gray-900 min-h-screen p-6 border-r border-gray-800 shadow-sm flex flex-col">
       {/* Logo */}
       <div className="mb-10">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
             <div className="text-white font-bold text-xl">E</div>
           </div>
-          <h2 className="text-xl font-bold text-gray-800">Example.com</h2>
+          <h2 className="text-xl font-bold text-white">Example.com</h2>
         </div>
       </div>
 
       {/* Navigation Items */}
       <nav>
         <div className="mb-6">
-          <p className="text-xs font-semibold text-gray-500 mb-3 px-3 uppercase">Main Navigation</p>
+          <p className="text-xs font-semibold text-gray-400 mb-3 px-3 uppercase">Main Navigation</p>
           <NavItem 
             icon={<Home size={20} />} 
             label="Home" 
@@ -57,7 +57,7 @@ const Navbar = () => {
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-gray-500 mb-3 px-3 uppercase">Features</p>
+          <p className="text-xs font-semibold text-gray-400 mb-3 px-3 uppercase">Features</p>
           <NavItem 
             icon={<CircleDollarSign size={20} />} 
             label="DeFi" 
@@ -91,10 +91,10 @@ const Navbar = () => {
             className="flex items-center justify-between px-3 py-2 cursor-pointer"
             onClick={() => setCryptoExpanded(!cryptoExpanded)}
           >
-            <p className="text-xs font-semibold text-gray-500 uppercase">Cryptocurrencies</p>
+            <p className="text-xs font-semibold text-gray-400 uppercase">Cryptocurrencies</p>
             <ChevronDown 
               size={16} 
-              className={`text-gray-500 transition-transform duration-200 ${cryptoExpanded ? 'transform rotate-180' : ''}`}
+              className={`text-gray-400 transition-transform duration-200 ${cryptoExpanded ? 'transform rotate-180' : ''}`}
             />
           </div>
           
@@ -133,17 +133,17 @@ const NavItem = ({ icon, label, active, onClick, badge, subtitle }) => {
   return (
     <div 
       className={`flex items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 group
-        ${active ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50 text-gray-700'}`}
+        ${active ? 'bg-blue-900/50 text-blue-400' : 'hover:bg-gray-800 text-gray-300'}`}
       onClick={onClick}
     >
-      <div className={`${active ? 'text-blue-600' : 'text-gray-600 group-hover:text-gray-900'}`}>
+      <div className={`${active ? 'text-blue-400' : 'text-gray-400 group-hover:text-gray-200'}`}>
         {icon}
       </div>
       <div className="ml-3 flex-1">
         <div className="flex items-center justify-between">
-          <span className={`font-medium ${active ? 'text-blue-600' : 'group-hover:text-gray-900'}`}>{label}</span>
+          <span className={`font-medium ${active ? 'text-blue-400' : 'group-hover:text-gray-200'}`}>{label}</span>
           {badge && (
-            <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full font-medium">{badge}</span>
+            <span className="bg-blue-900 text-blue-300 text-xs px-2 py-0.5 rounded-full font-medium">{badge}</span>
           )}
         </div>
         {subtitle && <span className="text-xs text-gray-500">{subtitle}</span>}
@@ -151,6 +151,5 @@ const NavItem = ({ icon, label, active, onClick, badge, subtitle }) => {
     </div>
   );
 };
-
 
 export default Navbar;

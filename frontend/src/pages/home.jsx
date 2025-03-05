@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import Search from '../components/search';
 import Crypto from '../pages/crypto';
+import Blockchain from '../pages/blockchain';
 const WalletPopup = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
@@ -72,7 +73,7 @@ const WalletPopup = ({ onClose }) => {
           
           <h2 className="text-white text-2xl font-bold mb-4">Start Exploring Web3</h2>
           <p className="text-white text-center mb-8">
-            Your wallet is the gateway to all things Ethereum, the magical technology that makes it possible to explore web3.
+            Your wallet is the gateway to all things Aptos, the magical technology that makes it possible to explore web3.
           </p>
           
           <button 
@@ -216,6 +217,7 @@ const ConnectWalletButton = () => {
 const Home = () => {
   const navigate = useNavigate(); 
   const [rotation, setRotation] = useState(0);
+  const [aiStatus, setAiStatus] = useState(false);
   
   // Animation for the coin semicircle
   useEffect(() => {
@@ -225,6 +227,28 @@ const Home = () => {
     
     return () => clearInterval(interval);
   }, []);
+  const toggleAiTrading = async () => {
+    try {
+      const response = await fetch('/toggle_ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ state: aiStatus ? 'off' : 'on' })
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        setAiStatus(!aiStatus);
+        alert(data.message);
+      } else {
+        alert('Failed to toggle AI trading');
+      }
+    } catch (error) {
+      console.error('Error toggling AI:', error);
+      alert('Error communicating with AI trading system');
+    }
+  };
   const handleStartTrading = () => {
     navigate('/trade'); // Navigate to trade page
   };
@@ -238,6 +262,29 @@ const Home = () => {
       
       <div className="flex-1 h-screen overflow-y-auto">
         <div className="p-7 mt-1 flex items-center justify-end">
+           {/* AI Trading Toggle */}
+           <div className="flex items-center mr-4">
+            <span className="mr-3 text-sm text-gray-300">AI Trading</span>
+            <div 
+              className={`w-16 h-8 rounded-full cursor-pointer relative transition-all duration-300 ${
+                aiStatus 
+                  ? 'bg-blue-600 bg-opacity-50' 
+                  : 'bg-gray-700 border border-gray-600'
+              }`}
+              onClick={toggleAiTrading}
+            >
+              <div 
+                className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full transition-all duration-300 ${
+                  aiStatus 
+                    ? 'right-1 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' 
+                    : 'left-1 bg-gray-500 shadow-[0_0_10px_rgba(107,114,128,0.5)]'
+                }`}
+              />
+            </div>
+            <span className={`ml-3 text-sm ${aiStatus ? 'text-blue-400' : 'text-gray-400'}`}>
+              {aiStatus ? 'Active' : 'Inactive'}
+            </span>
+          </div>
           {/* Using ConnectWalletButton instead of plain button */}
           <ConnectWalletButton />
           
@@ -247,9 +294,6 @@ const Home = () => {
           >
             Start Trading
           </button>
-          
-          {/* Search component */}
-          <Search placeholder="Search..." />
         </div>
         
         {/* Key Features content */}
@@ -294,7 +338,7 @@ const Home = () => {
                   />
                 </svg>
                 
-                <div className="absolute bottom-0 left-0 w-full flex justify-between text-xs text-gray-500 transform translate-y-6">
+                <div className="absolute bottom-0 left-0 w-full flex justify-between text-xs text-gray-500 transform translate-y-4.5">
                   <span>April</span>
                   <span>May</span>
                   <span>June</span>
@@ -413,6 +457,9 @@ const Home = () => {
             <div className="mt-10 transform translate-x-200">
             <Crypto />
           </div>
+          <div className="col-span-1 relative left-[-390px]">
+              <Blockchain />
+            </div>
           </div>
 
         </div>

@@ -3,7 +3,6 @@ import Navbar from "../components/navbar";
 
 const Trade = () => {
   const [formData, setFormData] = useState({
-    // Basic User Preferences
     tradingPair: '',
     tradeType: '',
     orderType: '',
@@ -11,13 +10,9 @@ const Trade = () => {
     investmentAmount: '',
     leverage: '1x',
     marginMode: '',
-    
-    // Risk Management
     stopLossPrice: '',
     takeProfitPrice: '',
     riskToleranceLevel: '',
-    
-    // AI & Automation
     autoHedging: false,
     dynamicLeverage: false,
     liquidationPrevention: false
@@ -34,11 +29,28 @@ const Trade = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Here you would typically send the data to your backend
-    alert('Trading setup completed successfully!');
+    try {
+      const response = await fetch('http://localhost:5000/api/trade', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Backend response:', result);
+        alert(`Trading setup completed successfully! Transaction Hash: ${result.txnHash || 'N/A'}`);
+      } else {
+        throw new Error('Failed to submit trade setup');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Error submitting trade setup. Please try again.');
+    }
   };
 
   const nextSection = () => {
@@ -55,7 +67,6 @@ const Trade = () => {
     }
   };
 
-  // Helper function to render section indicator
   const renderSectionIndicator = () => {
     return (
       <div className="flex items-center justify-center my-6">
@@ -64,7 +75,7 @@ const Trade = () => {
             <div 
               onClick={() => setCurrentSection(num)}
               className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 ${
-                currentSection === num ? 'bg-indigo-600 text-gray-100' : 'bg-gray-700 text-gray-300'
+                currentSection === num ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300'
               }`}
             >
               {num}
@@ -80,27 +91,23 @@ const Trade = () => {
 
   return (
     <div className="flex w-screen min-h-screen bg-gray-900 text-gray-200">
-      {/* Navbar on the left */}
       <div className="w-70 flex-shrink-0">
         <Navbar />
       </div>
       
-      {/* Main content on the right */}
       <div className="flex-1 p-6 overflow-auto">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-100 mb-2">Trading Setup Configuration</h2>
+          <h2 className="text-3xl font-bold text-center text-white mb-2">Trading Setup Configuration</h2>
           <p className="text-center text-gray-400 mb-6">Complete your trading preferences in 3 simple steps</p>
           
           {renderSectionIndicator()}
           
           <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700 transition-all duration-500">
             <form onSubmit={handleSubmit}>
-              
-              {/* Section 1: Basic User Preferences */}
               {currentSection === 1 && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
-                    <span className="bg-indigo-600 text-gray-100 w-8 h-8 rounded-full flex items-center justify-center mr-2">1</span>
+                  <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
+                    <span className="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">1</span>
                     Trade Setup Inputs
                   </h2>
                   
@@ -269,11 +276,10 @@ const Trade = () => {
                 </div>
               )}
               
-              {/* Section 2: Risk Management */}
               {currentSection === 2 && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
-                    <span className="bg-indigo-600 text-gray-100 w-8 h-8 rounded-full flex items-center justify-center mr-2">2</span>
+                  <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
+                    <span className="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">2</span>
                     Risk Management Inputs
                   </h2>
                   
@@ -287,7 +293,7 @@ const Trade = () => {
                           name="stopLossPrice" 
                           value={formData.stopLossPrice} 
                           onChange={handleChange}
-                          placeholder="47,000"
+                          placeholder="47000"
                           className="w-full p-3 pl-8 border border-gray-600 rounded-md bg-gray-700 text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
@@ -303,7 +309,7 @@ const Trade = () => {
                           name="takeProfitPrice" 
                           value={formData.takeProfitPrice} 
                           onChange={handleChange}
-                          placeholder="52,000"
+                          placeholder="52000"
                           className="w-full p-3 pl-8 border border-gray-600 rounded-md bg-gray-700 text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                       </div>
@@ -375,7 +381,7 @@ const Trade = () => {
                     <button
                       type="button"
                       onClick={prevSection}
-                      className="px-6 py-3 border border-gray-800 text-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-800 focus:ring-offset-2 focus:ring-offset-gray-800 transition"
+                      className="px-6 py-3 border border-gray-600 text-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition"
                     >
                       Previous Step
                     </button>
@@ -390,11 +396,10 @@ const Trade = () => {
                 </div>
               )}
               
-              {/* Section 3: AI & Automation */}
               {currentSection === 3 && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
-                    <span className="bg-indigo-600 text-gray-100 w-8 h-8 rounded-full flex items-center justify-center mr-2">3</span>
+                  <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
+                    <span className="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2">3</span>
                     AI & Automation Preferences
                   </h2>
                   
@@ -414,7 +419,7 @@ const Trade = () => {
                             className="sr-only"
                           />
                           <div className={`relative w-14 h-7 transition-colors duration-200 ease-in-out rounded-full ${formData.autoHedging ? 'bg-indigo-600' : 'bg-gray-600'}`}>
-                            <div className={`absolute left-1 top-1 bg-gray-200 w-5 h-5 rounded-full transition-transform duration-200 ease-in-out ${formData.autoHedging ? 'transform translate-x-7' : ''}`}></div>
+                            <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform duration-200 ease-in-out ${formData.autoHedging ? 'transform translate-x-7' : ''}`}></div>
                           </div>
                         </label>
                       </div>
@@ -435,7 +440,7 @@ const Trade = () => {
                             className="sr-only"
                           />
                           <div className={`relative w-14 h-7 transition-colors duration-200 ease-in-out rounded-full ${formData.dynamicLeverage ? 'bg-indigo-600' : 'bg-gray-600'}`}>
-                            <div className={`absolute left-1 top-1 bg-gray-200 w-5 h-5 rounded-full transition-transform duration-200 ease-in-out ${formData.dynamicLeverage ? 'transform translate-x-7' : ''}`}></div>
+                            <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform duration-200 ease-in-out ${formData.dynamicLeverage ? 'transform translate-x-7' : ''}`}></div>
                           </div>
                         </label>
                       </div>
@@ -456,7 +461,7 @@ const Trade = () => {
                             className="sr-only"
                           />
                           <div className={`relative w-14 h-7 transition-colors duration-200 ease-in-out rounded-full ${formData.liquidationPrevention ? 'bg-indigo-600' : 'bg-gray-600'}`}>
-                            <div className={`absolute left-1 top-1 bg-gray-200 w-5 h-5 rounded-full transition-transform duration-200 ease-in-out ${formData.liquidationPrevention ? 'transform translate-x-7' : ''}`}></div>
+                            <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform duration-200 ease-in-out ${formData.liquidationPrevention ? 'transform translate-x-7' : ''}`}></div>
                           </div>
                         </label>
                       </div>
@@ -495,13 +500,11 @@ const Trade = () => {
                   </div>
                 </div>
               )}
-              
             </form>
           </div>
           
-          {/* Form Preview */}
           <div className="mt-8 bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-100 mb-4">Trading Setup Preview</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Trading Setup Preview</h3>
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               {formData.tradingPair && (
                 <div className="bg-gray-700 p-3 rounded border border-gray-600">
@@ -549,6 +552,7 @@ const Trade = () => {
         </div>
       </div>
     </div>
+    
   );
 };
 

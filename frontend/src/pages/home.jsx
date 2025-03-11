@@ -2,9 +2,10 @@ import React, { useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import Search from '../components/search';
-import Crypto from '../pages/crypto';
-import Blockchain from '../pages/blockchain';
-const WalletPopup = ({ onClose }) => {
+import Map from './map';
+
+
+const DataSourcePopup = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-xl p-8 max-w-md w-full relative">
@@ -15,7 +16,7 @@ const WalletPopup = ({ onClose }) => {
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
           </button>
-          <h2 className="text-white text-xl font-bold">Get a Wallet</h2>
+          <h2 className="text-white text-xl font-bold">Data Sources</h2>
           <button onClick={onClose} className="text-black">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -24,45 +25,45 @@ const WalletPopup = ({ onClose }) => {
           </button>
         </div>
         
-        {/* Wallet icons */}
+        {/* Data source icons */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative w-64 h-64 mb-8">
-            {/* Center blue wallet icon */}
+            {/* Center blue icon */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
               <div className="bg-blue-600 rounded-xl w-16 h-16 flex items-center justify-center shadow-lg">
-                <div className="bg-white w-6 h-6 rounded-sm"></div>
+                <div className="text-white text-2xl">🌍</div>
               </div>
             </div>
             
-            {/* Top left wallet icon (fox/metamask) */}
+            {/* Top left icon (NOAA) */}
             <div className="absolute top-0 left-0">
               <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center shadow-lg">
-                <div className="bg-orange-600 w-8 h-8 rounded-sm transform rotate-45"></div>
+                <div className="text-blue-600 text-sm font-bold">NOAA</div>
               </div>
             </div>
             
-            {/* Top right wallet icon (shield) */}
+            {/* Top right icon (NASA) */}
             <div className="absolute top-0 right-0">
               <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center shadow-lg">
-                <div className="text-blue-500 text-2xl">🛡️</div>
+                <div className="text-blue-500 text-sm font-bold">NASA</div>
               </div>
             </div>
             
-            {/* Bottom left wallet icon */}
+            {/* Bottom left icon (UNEP) */}
             <div className="absolute bottom-0 left-0">
               <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center shadow-lg">
-                <div className="text-orange-500 text-2xl">🔺</div>
+                <div className="text-green-500 text-sm font-bold">UNEP</div>
               </div>
             </div>
             
-            {/* Bottom right wallet icon (wave) */}
+            {/* Bottom right icon (WMO) */}
             <div className="absolute bottom-0 right-0">
-              <div className="bg-teal-500 rounded-xl w-14 h-14 flex items-center justify-center shadow-lg text-white text-2xl">
-                ~
+              <div className="bg-teal-500 rounded-xl w-14 h-14 flex items-center justify-center shadow-lg text-white text-sm font-bold">
+                WMO
               </div>
             </div>
             
-            {/* Curved lines connecting wallets */}
+            {/* Curved lines connecting icons */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
               <path d="M100,100 C80,70 50,80 30,30" stroke="#333" fill="none" strokeWidth="1" />
               <path d="M100,100 C120,70 150,80 170,30" stroke="#333" fill="none" strokeWidth="1" />
@@ -71,16 +72,16 @@ const WalletPopup = ({ onClose }) => {
             </svg>
           </div>
           
-          <h2 className="text-white text-2xl font-bold mb-4">Start Exploring Web3</h2>
+          <h2 className="text-white text-2xl font-bold mb-4">Access Global Climate Data</h2>
           <p className="text-white text-center mb-8">
-            Your wallet is the gateway to all things Aptos, the magical technology that makes it possible to explore web3.
+            Our platform integrates with leading climate data providers to give you the most accurate and comprehensive information for your risk assessments.
           </p>
           
           <button 
-            onClick={() => window.open('https://martianwallet.xyz/download', '_blank')}
+            onClick={() => window.open('https://data.noaa.gov/onestop/collections/details/666b9db2-e598-4d5a-9240-c4c10fc3c7a6', '_blank')}
             className="bg-white text-gray-900 w-full py-4 px-6 rounded-full font-bold flex items-center justify-between"
           >
-            Choose Your First Wallet
+            Explore Available Data Sources
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 18l6-6-6-6"/>
             </svg>
@@ -91,74 +92,52 @@ const WalletPopup = ({ onClose }) => {
   );
 };
 
-
-const ConnectWalletButton = () => {
+const ConnectDataButton = () => {
   const [showOptions, setShowOptions] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [hasWallet, setHasWallet] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   
-  // Check for wallet on component mount and window focus
+  // Check for connected data sources
   useEffect(() => {
-    checkForWallet();
+    checkForDataConnection();
     
-    // Also check when window gets focus (user might have installed wallet in another tab)
-    window.addEventListener('focus', checkForWallet);
-    return () => window.removeEventListener('focus', checkForWallet);
+    // Also check when window gets focus
+    window.addEventListener('focus', checkForDataConnection);
+    return () => window.removeEventListener('focus', checkForDataConnection);
   }, []);
   
-  // Function to check for wallet presence
-  const checkForWallet = () => {
-    // Check common wallet providers
-    const walletDetected = 
-      typeof window !== 'undefined' && 
-      (window.ethereum || 
-       window.martian || 
-       window.aptos || 
-       window.pontem ||
-       document.querySelector('[data-wallet]'));
-    
-    setHasWallet(!!walletDetected);
-    console.log("Wallet detected:", !!walletDetected);
-    
-    // Log which wallet was found
-    if (window.ethereum) console.log("Ethereum wallet found");
-    if (window.martian) console.log("Martian wallet found");
-    if (window.aptos) console.log("Aptos wallet found");
-    if (window.pontem) console.log("Pontem wallet found");
+  // Function to check for data connections
+  const checkForDataConnection = () => {
+    // This would actually check for API connections or loaded datasets
+    const hasConnection = localStorage.getItem('climateDataConnected') === 'true';
+    setIsConnected(hasConnection);
   };
   
-  const handleWalletConnect = () => {
-    if (hasWallet) {
+  const handleConnect = () => {
+    if (isConnected) {
       setShowOptions(true);
     } else {
       setShowPopup(true);
     }
   };
   
-  const connectExistingWallet = async () => {
-    console.log("Connecting to existing wallet");
+  const connectToData = async () => {
+    console.log("Connecting to data sources");
     
     try {
-      // Try to connect to different wallet types
-      if (window.ethereum) {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        console.log("Connected to Ethereum wallet");
-      } 
-      else if (window.martian) {
-        await window.martian.connect();
-        console.log("Connected to Martian wallet");
-      }
-      else if (window.aptos) {
-        await window.aptos.connect();
-        console.log("Connected to Aptos wallet");
-      }
-      // Add more wallet types as needed
+      // Simulate connecting to data sources
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      localStorage.setItem('climateDataConnected', 'true');
+      setIsConnected(true);
       
       // Close the options menu
       setShowOptions(false);
+      
+      alert("Successfully connected to climate data sources");
     } catch (error) {
-      console.error("Error connecting to wallet:", error);
-      alert("Failed to connect to wallet. Please try again.");
+      console.error("Error connecting to data sources:", error);
+      alert("Failed to connect to data sources. Please try again.");
     }
   };
   
@@ -167,7 +146,7 @@ const ConnectWalletButton = () => {
     if (!showOptions) return;
     
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.wallet-dropdown') && !event.target.closest('.wallet-button')) {
+      if (!event.target.closest('.data-dropdown') && !event.target.closest('.data-button')) {
         setShowOptions(false);
       }
     };
@@ -176,25 +155,23 @@ const ConnectWalletButton = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showOptions]);
   
- 
-  
   return (
     <div className="relative">
       <button 
-        className="wallet-button bg-blue-600 hover:bg-blue-700 text-black font-medium py-2 px-4 rounded-lg mr-4"
-        onClick={handleWalletConnect}
+        className="data-button bg-blue-600 hover:bg-blue-700 text-black font-medium py-2 px-4 rounded-lg mr-4"
+        onClick={handleConnect}
       >
-        Connect Wallet
+        {isConnected ? "Manage Data Sources" : "Connect Data Sources"}
       </button>
       
-      {/* Options dropdown if user has a wallet */}
+      {/* Options dropdown if user has connected data */}
       {showOptions && (
-        <div className="wallet-dropdown absolute top-full mt-2 right-0 bg-gray-800 rounded-lg shadow-lg p-2 z-40 w-48">
+        <div className="data-dropdown absolute top-full mt-2 right-0 bg-gray-800 rounded-lg shadow-lg p-2 z-40 w-48">
           <button 
-            onClick={connectExistingWallet}
+            onClick={connectToData}
             className="text-white hover:bg-gray-700 rounded px-4 py-2 w-full text-left"
           >
-            Connect Existing Wallet
+            Refresh Connections
           </button>
           <button 
             onClick={() => {
@@ -203,13 +180,13 @@ const ConnectWalletButton = () => {
             }}
             className="text-white hover:bg-gray-700 rounded px-4 py-2 w-full text-left"
           >
-            I Don't Have a Wallet
+            Add New Data Source
           </button>
         </div>
       )}
       
-      {/* Wallet installation popup */}
-      {showPopup && <WalletPopup onClose={() => setShowPopup(false)} />}
+      {/* Data sources popup */}
+      {showPopup && <DataSourcePopup onClose={() => setShowPopup(false)} />}
     </div>
   );
 };
@@ -219,7 +196,7 @@ const Home = () => {
   const [rotation, setRotation] = useState(0);
   const [aiStatus, setAiStatus] = useState(false);
   
-  // Animation for the coin semicircle
+  // Animation for the icon semicircle
   useEffect(() => {
     const interval = setInterval(() => {
       setRotation(prev => (prev + 0.2) % 360);
@@ -227,7 +204,8 @@ const Home = () => {
     
     return () => clearInterval(interval);
   }, []);
-  const toggleAiTrading = async () => {
+  
+  const toggleAiPrediction = async () => {
     try {
       const response = await fetch('/toggle_ai', {
         method: 'POST',
@@ -240,38 +218,39 @@ const Home = () => {
       const data = await response.json();
       if (response.ok) {
         setAiStatus(!aiStatus);
-        alert(data.message);
+        alert(data.message || "AI prediction mode toggled successfully");
       } else {
-        alert('Failed to toggle AI trading');
+        alert('Failed to toggle AI prediction mode');
       }
     } catch (error) {
       console.error('Error toggling AI:', error);
-      alert('Error communicating with AI trading system');
+      alert('Error communicating with AI prediction system');
     }
   };
-  const handleStartTrading = () => {
-    navigate('/trade'); // Navigate to trade page
+  
+  const handleStartAssessment = () => {
+    navigate('/assessment'); // Navigate to assessment page
   };
 
   return (
-    <div className="w-screen h-screen flex bg-black text-white overflow-hidden ">
+    <div className="w-screen h-screen flex bg-black text-white overflow-hidden">
 
-      <div className="w-70 bg-gray-900 h-full ">
+      <div className="w-70 bg-gray-900 h-full">
         <Navbar />
       </div>
       
       <div className="flex-1 h-screen overflow-y-auto">
         <div className="p-7 mt-1 flex items-center justify-end">
-           {/* AI Trading Toggle */}
+           {/* AI Prediction Toggle */}
            <div className="flex items-center mr-4">
-            <span className="mr-3 text-sm text-gray-300">AI Trading</span>
+            <span className="mr-3 text-sm text-gray-300">AI Prediction</span>
             <div 
               className={`w-16 h-8 rounded-full cursor-pointer relative transition-all duration-300 ${
                 aiStatus 
                   ? 'bg-blue-600 bg-opacity-50' 
                   : 'bg-gray-700 border border-gray-600'
               }`}
-              onClick={toggleAiTrading}
+              onClick={toggleAiPrediction}
             >
               <div 
                 className={`absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full transition-all duration-300 ${
@@ -285,14 +264,14 @@ const Home = () => {
               {aiStatus ? 'Active' : 'Inactive'}
             </span>
           </div>
-          {/* Using ConnectWalletButton instead of plain button */}
-          <ConnectWalletButton />
+          
+          <ConnectDataButton />
           
            <button 
-            onClick={handleStartTrading} 
+            onClick={handleStartAssessment} 
             className="bg-green-600 hover:bg-green-700 text-black font-medium py-2 px-4 rounded-lg mr-6"
           >
-            Start Trading
+            Start Risk Assessment
           </button>
         </div>
         
@@ -302,16 +281,16 @@ const Home = () => {
           <div className="text-center mb-8">
             <h2 className="text-4xl font-bold mb-2">Key Features</h2>
             <p className="text-gray-400">
-              Unlock the Power of waveX: Key Features to Elevate Your Crypto Trading Experience
+              Unlock the Power of ClimateGuard: Key Features to Enhance Your Climate Risk Assessment
             </p>
           </div>
           
           <div className="grid grid-cols-3 gap-6">
-            {/* Zero Price Impact section */}
+            {/* Advanced Analytics section */}
             <div className="bg-gray-900 rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-3">Zero Price Impact & Minimal Slippage</h2>
+              <h2 className="text-xl font-bold mb-3">Advanced Analytics & Predictive Models</h2>
               <p className="text-gray-400 text-sm mb-4">
-                Execute large trades with zero price impact and minimal slippage using our oracle-based system.
+                Execute comprehensive climate risk assessments with our AI-powered predictive modeling system.
               </p>
               
               <button className="bg-white text-black px-4 py-2 rounded mb-6">
@@ -330,63 +309,70 @@ const Home = () => {
                 
                 <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
                   <path 
-                    d="M0,70 C20,80 30,40 50,60 S70,30 100,10"
+                    d="M0,50 C10,40 20,60 30,55 S50,30 60,35 S80,50 90,30 L90,100 L0,100 Z"
                     stroke="#2196F3"
-                    strokeWidth="3"
-                    fill="none"
+                    strokeWidth="1"
+                    fill="rgba(33, 150, 243, 0.1)"
+                    className="drop-shadow-lg"
+                  />
+                  <path 
+                    d="M0,70 C10,65 30,80 40,75 S60,60 70,65 S80,75 90,60 L90,100 L0,100 Z"
+                    stroke="#FF5722"
+                    strokeWidth="1"
+                    fill="rgba(255, 87, 34, 0.1)"
                     className="drop-shadow-lg"
                   />
                 </svg>
                 
                 <div className="absolute bottom-0 left-0 w-full flex justify-between text-xs text-gray-500 transform translate-y-4.5">
-                  <span>April</span>
-                  <span>May</span>
-                  <span>June</span>
-                  <span>July</span>
-                  <span>August</span>
+                  <span>2023</span>
+                  <span>2030</span>
+                  <span>2040</span>
+                  <span>2050</span>
+                  <span>2060</span>
                 </div>
               </div>
             </div>
             
-           {/* TradeGuard Section */}
+           {/* RiskGuard Section */}
             <div className="bg-gray-900 rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-3">TradeGuard: AI-Powered Risk Management</h2>
+              <h2 className="text-xl font-bold mb-3">RiskGuard: AI-Powered Risk Management</h2>
               <p className="text-gray-400 text-sm mb-4">
-                TradeGuard is an AI-driven DeFi agent on the Aptos blockchain, providing real-time risk management by dynamically hedging positions, optimizing leverage, and executing liquidation prevention strategies.
+                RiskGuard is an AI-driven climate analysis tool providing real-time risk assessment by dynamically monitoring climate patterns, identifying vulnerable areas, and executing early warning systems for climate-related disasters.
               </p>
 
               <div className="grid grid-cols-2 gap-4 mt-8">
                 <div className="bg-gray-800 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-blue-400">24/7</div>
-                  <div className="text-xs text-gray-400">Automated Protection</div>
+                  <div className="text-xs text-gray-400">Continuous Monitoring</div>
                 </div>
                 <div className="bg-gray-800 rounded-lg p-4 text-center">
-                  <div className="text-2xl font-bold text-green-400">0%</div>
-                  <div className="text-xs text-gray-400">Manual Intervention</div>
+                  <div className="text-2xl font-bold text-green-400">90%</div>
+                  <div className="text-xs text-gray-400">Prediction Accuracy</div>
                 </div>
                 <div className="bg-gray-800 rounded-lg p-4 text-center">
                   <div className="text-1xl font-bold text-purple-400">AI-Powered</div>
-                  <div className="text-sm text-gray-400">Risk Management</div>
+                  <div className="text-sm text-gray-400">Risk Assessment</div>
                 </div>
                 <div className="bg-gray-800 rounded-lg p-4 text-center">
-                  <div className="text-1xl font-bold text-yellow-400">On-Chain</div>
-                  <div className="text-sm text-gray-400">Smart Execution</div>
+                  <div className="text-1xl font-bold text-yellow-400">Data-Driven</div>
+                  <div className="text-sm text-gray-400">Recommendations</div>
                 </div>
               </div>
             </div>
             
-            {/* Diverse Markets section with semicircle of coins */}
+            {/* Climate Indicators section with semicircle of icons */}
             <div className="bg-gray-900 rounded-lg p-6 relative overflow-hidden">
-              <h2 className="text-xl font-bold mb-3">Diverse Markets</h2>
+              <h2 className="text-xl font-bold mb-3">Comprehensive Climate Indicators</h2>
               <p className="text-gray-400 text-sm mb-4">
-                Access a wide variety of markets, including commodities, forex, premium sectors, and cryptocurrencies.
+                Access a wide variety of climate indicators, including temperature trends, precipitation, sea level rise, extreme weather events, and more.
               </p>
               
               {/* Semicircle container */}
               <div className="relative h-64 flex justify-center">
-                {/* Center "W" logo */}
+                {/* Center logo */}
                 <div className="absolute z-20 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 rounded-full w-14 h-14 flex items-center justify-center border-2 border-gray-700 shadow-lg">
-                  <span className="text-xl font-bold text-blue-500">TG</span>
+                  <span className="text-xl font-bold text-blue-500">CG</span>
                 </div>
                 
                 {/* Fixed semicircle */}
@@ -400,7 +386,7 @@ const Home = () => {
                   />
                 </svg>
                 
-                {/* Rotating coins container */}
+                {/* Rotating icons container */}
                 <div 
                   className="absolute w-full h-full"
                   style={{ 
@@ -412,54 +398,51 @@ const Home = () => {
                     transformOrigin: "center"
                   }}
                 >
-                  {/* Bitcoin */}
+                  {/* Temperature */}
                   <div className="absolute" style={{ top: "0", left: "50%", transform: "translate(-50%, -50%)" }}>
-                    <div className="bg-yellow-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">₿</div>
+                    <div className="bg-red-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">🌡️</div>
                   </div>
                   
-                  {/* Ethereum */}
+                  {/* Precipitation */}
                   <div className="absolute" style={{ top: "35px", right: "35px", transform: "translate(50%, -50%)" }}>
-                    <div className="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">Ξ</div>
+                    <div className="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">💧</div>
                   </div>
                   
-                  {/* Tether */}
+                  {/* Sea Level */}
                   <div className="absolute" style={{ top: "120px", right: "0", transform: "translate(50%, -50%)" }}>
-                    <div className="bg-teal-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">₮</div>
+                    <div className="bg-teal-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">🌊</div>
                   </div>
                   
-                  {/* USDC */}
+                  {/* Hurricanes */}
                   <div className="absolute" style={{ bottom: "35px", right: "35px", transform: "translate(50%, 50%)" }}>
-                    <div className="bg-blue-400 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">$</div>
+                    <div className="bg-blue-400 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">🌀</div>
                   </div>
                   
-                  {/* Binance Coin */}
+                  {/* Wildfires */}
                   <div className="absolute" style={{ bottom: "0", left: "50%", transform: "translate(-50%, 50%)" }}>
-                    <div className="bg-orange-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">B</div>
+                    <div className="bg-orange-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">🔥</div>
                   </div>
                   
-                  {/* Ripple */}
+                  {/* Drought */}
                   <div className="absolute" style={{ bottom: "35px", left: "35px", transform: "translate(-50%, 50%)" }}>
-                    <div className="bg-blue-300 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">X</div>
+                    <div className="bg-yellow-600 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">🏜️</div>
                   </div>
                   
-                  {/* Cardano */}
+                  {/* Air Quality */}
                   <div className="absolute" style={{ top: "120px", left: "0", transform: "translate(-50%, -50%)" }}>
-                    <div className="bg-blue-800 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">A</div>
+                    <div className="bg-green-600 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">💨</div>
                   </div>
                   
-                  {/* Solana */}
+                  {/* Biodiversity */}
                   <div className="absolute" style={{ top: "35px", left: "35px", transform: "translate(-50%, -50%)" }}>
-                    <div className="bg-purple-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">S</div>
+                    <div className="bg-purple-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold shadow-lg">🌱</div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="mt-10 transform translate-x-200">
-            <Crypto />
-          </div>
-          <div className="col-span-1 relative left-[-390px]">
-              <Blockchain />
-            </div>
+            
+            {/* Replace the Global Climate Risk Map with the Map component */}
+            <Map />
           </div>
 
         </div>

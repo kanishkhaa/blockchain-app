@@ -57,8 +57,8 @@ const Navbar = () => {
           <NavItem 
             icon={<Layers size={20} />} 
             label="Vulnerability Analysis" 
-            active={location.pathname === "/vulnerability"} 
-            onClick={() => handleNavigation("/vulnerability")}
+            active={location.pathname === "/form"} 
+            onClick={() => handleNavigation("/form")}
           />
           <NavItem 
             icon={<BarChart2 size={20} />} 

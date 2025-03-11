@@ -1,9 +1,9 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Navbar from '../components/navbar';
 import Search from '../components/search';
 import Map from './map';
-
 
 const DataSourcePopup = ({ onClose }) => {
   return (
@@ -187,6 +187,103 @@ const ConnectDataButton = () => {
       
       {/* Data sources popup */}
       {showPopup && <DataSourcePopup onClose={() => setShowPopup(false)} />}
+    </div>
+  );
+};
+
+// Prediction Form Component
+const PredictionForm = () => {
+  const [formData, setFormData] = useState({
+    Year: "",
+    WRI: "",
+    Exposure: "",
+    Vulnerability: "",
+    Susceptibility: "",
+    "Lack of Coping Capabilities": "",
+    "Lack of Adaptive Capacities": "",
+    CPI: "",
+    Latitude: "",
+    Longitude: "",
+    "Reconstruction Costs ('000 US$)": "",
+    "No Affected": "",
+  });
+
+  const [prediction, setPrediction] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("http://localhost:8080/predict", formData);
+      setPrediction(res.data);
+    } catch (error) {
+      console.error("Error fetching prediction:", error);
+      alert("Error fetching prediction. Please try again later.");
+    }
+  };
+
+  return (
+    <div className="bg-gray-900 rounded-lg p-6 col-span-3">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Disaster Impact Prediction</h2>
+        <button 
+          onClick={() => setShowForm(!showForm)} 
+          className="bg-blue-600 hover:bg-blue-700 text-black px-4 py-2 rounded-lg"
+        >
+          {showForm ? "Hide Form" : "Make Prediction"}
+        </button>
+      </div>
+      
+      {showForm && (
+        <form onSubmit={handleSubmit} className="mt-4">
+          <div className="grid grid-cols-3 gap-4">
+            {Object.keys(formData).map((key) => (
+              <div key={key} className="mb-4">
+                <label className="block text-gray-400 mb-1 text-sm">{key}</label>
+                <input 
+                  type="text" 
+                  name={key} 
+                  value={formData[key]} 
+                  onChange={handleChange} 
+                  className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-black" 
+                  required 
+                />
+              </div>
+            ))}
+          </div>
+          
+          <button 
+            type="submit" 
+            className="mt-4 bg-green-600 hover:bg-green-700 text-black px-6 py-2 rounded-lg"
+          >
+            Predict Impact
+          </button>
+        </form>
+      )}
+      
+      {prediction && (
+        <div className="mt-6 bg-gray-800 p-4 rounded-lg">
+          <h3 className="text-lg font-bold mb-4 text-white">Prediction Results</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gray-700 p-4 rounded-lg text-center">
+              <div className="text-2xl font-bold text-red-400">
+                {prediction["Total Deaths"]}
+              </div>
+              <div className="text-sm text-gray-400">Predicted Total Deaths</div>
+            </div>
+            <div className="bg-gray-700 p-4 rounded-lg text-center">
+              <div className="text-2xl font-bold text-yellow-400">
+                ${prediction["Total Damages ('000 US$)"]}k
+              </div>
+              <div className="text-sm text-gray-400">Predicted Total Damages ('000 US$)</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -443,8 +540,10 @@ const Home = () => {
             
             {/* Replace the Global Climate Risk Map with the Map component */}
             <Map />
+            
+            {/* Add the Prediction Form component */}
+            <PredictionForm />
           </div>
-
         </div>
       </div>
     </div>
